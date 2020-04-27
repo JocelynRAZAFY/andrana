@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600" rel="stylesheet">
+    {{ encore_entry_link_tags('app') }}
+</head>
+<body>
+<div id="app" data-host="{{ host }}"></div>
+{{ encore_entry_script_tags('app') }}
+</body>
+</html>

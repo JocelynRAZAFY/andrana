@@ -1,0 +1,69 @@
+security:
+    encoders:
+        App\Entity\User:
+            algorithm: bcrypt
+
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    providers:
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        # login:
+        #    pattern:  ^/api/user/login
+        #   stateless: true
+        #  anonymous: true
+        #            json_login:
+        #                check_path:               /api/user/login
+        #                username_path:            email
+        #                success_handler:          lexik_jwt_authentication.handler.authentication_success
+        #                failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern:   ^/api/back/
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
+            # main:
+            #    anonymous: true
+            #   guard:
+            #      authenticators:
+            #         - App\Security\LoginFormAuthenticator
+
+
+            #        main:
+            #            pattern: ^/
+            #            form_login:
+            #                provider: app_user_provider
+            #                csrf_token_generator: security.csrf.token_manager
+            #                # if you are using Symfony < 2.8, use the following config instead:
+            #                # csrf_provider: form.csrf_provider
+            #
+            #            logout:       true
+            #            anonymous:    true
+            #            guard:
+            #                authenticators:
+            #                    - App\Security\LoginFormAuthenticator
+
+            #            anonymous: lazy
+            #            provider: app_user_provider
+
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#firewalls-authentication
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+    # - { path: '^/login', roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+    # catch all other URLs
+    #- { path: '^/', roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+    # - { path: ^/admin, roles: ROLE_ADMIN }
+    # - { path: ^/profile, roles: ROLE_USER }

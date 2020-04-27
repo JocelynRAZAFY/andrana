@@ -1,0 +1,112 @@
+version: "3.4"
+
+networks:
+  web:
+    external: true
+
+services:
+
+    apache:
+      build: .docker/apache
+      container_name: andrana_apache
+      working_dir: /var/www/andrana
+      volumes:
+        - .:/var/www/andrana
+        - .docker/load:/var/lib/mysql-files
+      labels:
+        - traefik.backend=apache
+        - traefik.andrana.frontend.rule=Host:${SITE_URL}
+      networks:
+        - web
+      restart: always
+
+    traefik:
+      image: traefik:1.7.19
+      container_name: andrana_traefik
+      command: --docker --logLevel=ERROR
+      ports:
+        - "80:80"
+        - "8088:8080"
+        - "443:443"
+      labels:
+        - traefik.enable=false
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        # On map la conf statique dans le conteneur
+        - .docker/traefik/traefik.toml:/etc/traefik/traefik.toml
+        # On map les certificats dans le conteneur
+        # mkcert example.com '*.example.org' myapp.dev localhost 127.0.0.1 ::1
+        - /etc/certs/andrana:/etc/certs/andrana
+      networks:
+        - web
+      restart: always
+
+    mercure:
+      image: dunglas/mercure
+      container_name: andrana_mercure
+      labels:
+        - traefik.enable=false
+      environment:
+        # You should definitely change all these values in production
+        - JWT_KEY=${MERCURE_JWT_TOKEN}
+        - CERT_FILE=/etc/certs/andrana/andrana.com+4.pem
+        - KEY_FILE=/etc/certs/andrana/andrana.com+4-key.pem
+        - DEMO=1
+        - ALLOW_ANONYMOUS=1
+        - HEARTBEAT_INTERVAL=30s
+        - CORS_ALLOWED_ORIGINS=*
+        - PUBLISH_ALLOWED_ORIGINS=${MERCURE_PUBLISH_ALLOWED_ORIGINS}
+      volumes:
+        - /etc/certs/andrana:/etc/certs/andrana
+      ports:
+        - target: 443
+          published: 1337
+          protocol: tcp
+        #ports:
+        # - "${MERCURE_PORT}:80"
+
+
+    php-fpm:
+      build: .docker/php-fpm
+      container_name: andrana_php-fpm
+      working_dir: /var/www/andrana
+      volumes:
+        - .:/var/www/andrana
+        - .docker/php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
+
+    mysql:
+      image: mysql:8.0
+      container_name: andrana_mysql
+      volumes:
+        - .docker/data/db:/var/lib/mysql
+      command:
+        - "--default-authentication-plugin=mysql_native_password"
+        - "--lower_case_table_names=1"
+      labels:
+        - traefik.enable=false
+      environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${DB_NAME}
+        MYSQL_USER: ${DB_USERNAME}
+        MYSQL_PASSWORD: ${DB_PASSWORD}
+      networks:
+        - web
+      restart: always
+
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: andrana_phpmyadmin
+      labels:
+        - traefik.backend=phpmyadmin
+        - traefik.andrana.frontend.rule=Host:${PHPMYADMIN_URL}
+      environment:
+        PMA_HOST: mysql
+        PMA_PORT: 3306
+      links:
+        - mysql
+      networks:
+        - web
+      restart: always
+
+
+
