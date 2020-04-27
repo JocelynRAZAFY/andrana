@@ -55,10 +55,10 @@ class UserController extends AbstractController
     /**
      * @Route("/api/back/user/update", name="user_update", methods={"POST"})
      */
-    public function userUpdate(MessageBusInterface $bus)
+    public function userUpdate(PublisherInterface $publisher)
     {
         $update = new Update("https://andrana.com/books/1",json_encode(['status' => 'OutOfStock']));
-        $bus->dispatch($update);
+        $publisher($update);
 
         return $this->userManager->userUpdate();
     }
