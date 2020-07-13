@@ -21,14 +21,6 @@ Vue.use(ElementUI, {
     size: Cookies.get('size') || 'medium' // set element-ui default size
 })
 
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-// Install BootstrapVue
-Vue.use(BootstrapVue)
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin)
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-
 import '../js/app.js'
 import './permission'
 import GlobalComponent from './components/globalComponents'
@@ -36,6 +28,9 @@ Vue.use(GlobalComponent)
 
 import VueLazyload from "vue-lazyload";
 Vue.use(VueLazyload)
+
+import 'bootstrap-css-only/css/bootstrap.min.css'
+import 'mdbvue/lib/css/mdb.min.css'
 
 new Vue({
     template: '<App/>',

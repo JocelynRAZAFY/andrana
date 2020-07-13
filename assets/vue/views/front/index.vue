@@ -1,55 +1,35 @@
 <template>
-    <div class="profile-page">
-        <section class="section-profile-cover section-shaped my-0">
-            <div class="shape shape-style-1 shape-primary shape-skew alpha-4">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </section>
-        <section class="section section-skew">
-            <div class="container">
-                <card shadow class="card-profile mt--300" no-body>
-                    <div class="px-4">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-3 order-lg-2">
-                                <div class="card-profile-image">
-                                    <a href="#">
-                                        <img v-lazy="img" class="rounded-circle">
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 order-lg-3 text-lg-right align-self-lg-center">
-                                <div class="card-profile-actions py-4 mt-lg-0">
-                                    <router-link class="mr-4" to="/login">
-                                        <base-button type="info" size="sm" class="mr-4">Connect</base-button>
-                                    </router-link>
+    <div id="home">
+        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+        <mdb-btn color="primary">Primary</mdb-btn>
 
-                                </div>
-                            </div>
-                            <div class="col-lg-4 order-lg-1">
-                                <div class="card-profile-stats d-flex justify-content-center">
-                                    <h3>
-                                        Symfony 5 & Vuejs
-                                    </h3>
-                                </div>
-                            </div>
-                        </div>
+        <!-- Default button -->
+        <mdb-btn color="default">Default</mdb-btn>
 
-                    </div>
-                </card>
-            </div>
-        </section>
+        <!-- Secondary button -->
+        <mdb-btn color="secondary">Secondary</mdb-btn>
+
+        <!-- Indicates a successful or positive action -->
+        <mdb-btn color="success">Success</mdb-btn>
+
+        <!-- Contextual button for informational alert messages -->
+        <mdb-btn color="info">Info</mdb-btn>
+
+        <!-- Indicates caution should be taken with this action -->
+        <mdb-btn color="warning">Warning</mdb-btn>
+
+        <!-- Indicates a dangerous or potentially negative action -->
+        <mdb-btn color="danger">Danger</mdb-btn>
     </div>
 </template>
 
 <script>
+    import { mdbBtn } from 'mdbvue';
     export default {
         name: "index",
+        components: {
+            mdbBtn
+        },
         data(){
             return {
                 img: "image/vuejsymf.jpeg"
@@ -59,13 +39,7 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "../../../../assets/vendor/nucleo/css/nucleo.css";
-    @import "../../../../assets/vendor/font-awesome/css/font-awesome.css";
-    @import "../../../../assets/scss/argon.scss";
-    .rounded-circle{
-        width: 150px;
-        height: 150px;
-        border-radius: 100%;
-        border: 5px solid #FFF;
+    #home {
+        margin-top: 5em;
     }
 </style>

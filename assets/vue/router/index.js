@@ -39,6 +39,74 @@ export const constantRoutes = [
             },
         ]
     },
+    {
+        path: '/css',
+        name: 'Css',
+        component: () => import('../layout/front'),
+        redirect: '/css',
+        children: [
+            {
+                path: '/css',
+                name: 'Css',
+                component: () => import('../docs/categories/CSSPage')
+            },
+            {
+                path: '/css/background',
+                name: 'BackgroundImagePage',
+                component: () => import('../docs/CSS/BackgroundImagePage')
+            },
+            {
+                path: '/css/animations',
+                name: 'AnimationsPage',
+                component: () => import('../docs/CSS/AnimationsPage')
+            },
+            {
+                path: '/css/gradient',
+                name: 'GradientPage',
+                component: () => import('../docs/CSS/GradientPage')
+            },
+            {
+                path: '/css/hover',
+                name: 'HoverPagePage',
+                component: () => import('../docs/CSS/HoverPage')
+            },
+            {
+                path: '/css/icons',
+                name: 'FaPage',
+                component: () => import('../docs/CSS/FaPage')
+            },
+            {
+                path: '/css/masks',
+                name: 'MasksPage',
+                component: () => import('../docs/CSS/MasksPage')
+            },
+            {
+                path: '/css/masonry',
+                name: 'MasonryPage',
+                component: () => import('../docs/CSS/MasonryPage')
+            },
+            {
+                path: '/css/scrollbar',
+                name: 'CustomColorsScrollbarPage',
+                component: () => import('../docs/CSS/CustomColorsScrollbarPage')
+            },
+            {
+                path: '/css/table',
+                name: 'TablePage',
+                component: () => import('../docs/CSS/TablePage')
+            },
+            {
+                path: '/css/table-additional',
+                name: 'TableAdditionalPage',
+                component: () => import('../docs/CSS/TableAdditionalPage')
+            },
+            {
+                path: '/css/table-responsive',
+                name: 'TableResponsviePage',
+                component: () => import('../docs/CSS/TableResponsivePage')
+            }
+        ]
+    },
     { path: '*', redirect: '/404', hidden: true }
 ]
 

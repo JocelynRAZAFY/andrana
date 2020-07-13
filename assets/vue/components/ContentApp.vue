@@ -1,13 +1,9 @@
 <template>
     <div class="router-view">
-        <div class="router-content">
-            <div class="content-area__content">
-                <transition name="fade"
-                            mode="out-in">
-                    <router-view></router-view>
-                </transition>
-            </div>
-        </div>
+        <transition name="fade"
+                    mode="out-in">
+            <router-view></router-view>
+        </transition>
     </div>
 </template>
 
