@@ -1,3 +1,6 @@
+parameters:
+    max_pagination: '%env(MAX_PAGINATION)%'
+
 framework:
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true

@@ -1,10 +1,9 @@
 <template>
-    <div class="router-view">
-        <transition name="fade"
-                    mode="out-in">
+    <main :style="{ marginTop: $store.state.doc.docs ? '100px' : '0px' }">
+        <transition name="fade" mode="out-in">
             <router-view></router-view>
         </transition>
-    </div>
+    </main>
 </template>
 
 <script>

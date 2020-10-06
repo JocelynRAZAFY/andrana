@@ -27,15 +27,27 @@ export const constantRoutes = [
         path: '/',
         name: 'home',
         component: () => import('../layout/front'),
-        redirect: '/front',
+        redirect: '/acceuil',
         children: [
             {
-                path: 'front',
-                name: 'Front',
+                path: '/acceuil',
+                name: 'Acceuil',
                 component: () => import('../views/front'),
-                meta: {
-                    pageTitle: 'Shop'
-                }
+            },
+            {
+                path: '/author',
+                name: 'Author',
+                component: () => import('../views/author'),
+            },
+            {
+                path: '/article',
+                name: 'Article',
+                component: () => import('../views/article'),
+            },
+            {
+                path: '/article/:id',
+                name: 'Article',
+                component: () => import('../views/front'),
             },
         ]
     },

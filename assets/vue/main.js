@@ -31,6 +31,35 @@ Vue.use(VueLazyload)
 
 import 'bootstrap-css-only/css/bootstrap.min.css'
 import 'mdbvue/lib/css/mdb.min.css'
+import '@fortawesome/fontawesome-free/css/all.min.css'
+
+import Vuex from 'vuex'
+import Vueditor from 'vueditor'
+
+import 'vueditor/dist/style/vueditor.min.css'
+
+// your config here
+let config = {
+    toolbar: [
+        'removeFormat', 'undo', '|', 'elements','foreColor', 'backColor', 'divider',
+        'bold', 'italic', 'underline', 'strikeThrough', 'links', 'divider',
+        'divider', 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', '|'
+    ],
+    fontName: [
+        {val: 'arial black'},
+        {val: 'times new roman'},
+        {val: 'Courier New'}
+    ],
+    fontSize: [
+        '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'
+    ],
+    uploadUrl: '',
+    id: '',
+    classList: []
+};
+
+Vue.use(Vuex);
+Vue.use(Vueditor, config);
 
 new Vue({
     template: '<App/>',
