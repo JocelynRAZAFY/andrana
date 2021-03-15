@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ArticleRepository")
@@ -13,21 +14,25 @@ class Article
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"show_article","list_article","list_author","show_author"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Groups({"show_article","list_article","list_author","show_author"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"show_article","list_author","show_author"})
      */
     private $description;
 
     /**
      * @ORM\ManyToOne(targetEntity="Author", inversedBy="article")
+     * @Groups({"show_article","list_article"})
      */
     private $author;
 

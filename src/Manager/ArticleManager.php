@@ -5,13 +5,17 @@ namespace App\Manager;
 
 
 use App\Entity\Article;
+use App\Object\AllArticle;
 use App\Repository\ArticleRepository;
 use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ArticleManager extends BaseManager
@@ -25,6 +29,8 @@ class ArticleManager extends BaseManager
      * @var AuthorRepository
      */
     private $authorRepository;
+
+    private $normalizer;
 
     /**
      * ArticleManager constructor.
@@ -45,16 +51,18 @@ class ArticleManager extends BaseManager
         LoggerInterface $logger,
         SerializerInterface $serializer,
         ArticleRepository $articleRepository,
-        AuthorRepository $authorRepository)
+        AuthorRepository $authorRepository,
+        NormalizerInterface $normalizer)
     {
         $this->articleRepository = $articleRepository;
         $this->authorRepository = $authorRepository;
-
+        $this->normalizer = $normalizer;
         parent::__construct($em, $container, $requestStack, $session, $logger, $serializer);
     }
 
     /**
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @return JsonResponse
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
     public function allArticle()
     {
@@ -65,11 +73,14 @@ class ArticleManager extends BaseManager
             $page = ($this->data->page - 1) * $maxPagination ;
         }
 
+        $articles = $this->articleRepository->paginationArticle($page,$maxPagination);
+        $authors = $this->normalizer->normalize($this->authorRepository->findAll(),null,['groups' => ['list_author']]);
+
         $result = [
             'total' => count($this->articleRepository->findAll()),
             'maxPagination' => $maxPagination,
-            'articles' => $this->articleRepository->paginationArticle($page,$maxPagination),
-            'authors' => $this->authorRepository->transformAll($this->authorRepository->findAll())
+            'articles' => $articles,
+            'authors' => $authors
         ];
         return $this->success($result);
     }
@@ -93,7 +104,7 @@ class ArticleManager extends BaseManager
 
         $result = [
             'action' => $action,
-            'article' => $this->articleRepository->transform($article)
+            'article' => $this->normalizer->normalize($article,null,['groups' => ['list_article']])
         ];
         return $this->success($result);
     }

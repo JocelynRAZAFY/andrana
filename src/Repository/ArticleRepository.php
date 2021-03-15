@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
  * @method Article|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,37 +16,14 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
-    private $authorRepository;
+    private $normalizer;
 
     public function __construct(
         ManagerRegistry $registry,
-        AuthorRepository $authorRepository)
+        NormalizerInterface $normalizer)
     {
-        $this->authorRepository = $authorRepository;
+        $this->normalizer = $normalizer;
         parent::__construct($registry, Article::class);
-    }
-
-    public function transform(Article $article)
-    {
-        return [
-          'id' => $article->getId(),
-          'title' => $article->getTitle(),
-          'description' => $article->getDescription(),
-          'author' => $this->authorRepository->transform($article->getAuthor()),
-        ];
-    }
-
-    /**
-     * @param $items
-     * @return array
-     */
-    public function transformAll($items)
-    {
-        $result = [];
-        foreach ($items as $item){
-            $result[] = $this->transform($item);
-        }
-        return $result;
     }
 
     public function paginationArticle(int $page, int $max)
@@ -54,13 +33,9 @@ class ArticleRepository extends ServiceEntityRepository
             ->setFirstResult($page)
             ->setMaxResults($max);
 
-        $articles = $qb ->getQuery()->getResult();
-        $result = [];
-        foreach($articles as $article){
-            $result[] = $this->transform($article);
-        }
+        $results = $qb ->getQuery()->getResult(AbstractQuery::HYDRATE_OBJECT);
 
-        return $result;
+        return $this->normalizer->normalize($results, null,['groups' => ['list_article']]);;
     }
 
     // /**

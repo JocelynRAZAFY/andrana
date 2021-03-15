@@ -4,7 +4,10 @@ namespace App\Repository;
 
 use App\Entity\Author;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @method Author|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,40 +17,20 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AuthorRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $normalizer;
+    public function __construct(ManagerRegistry $registry,
+                                NormalizerInterface $normalizer)
     {
+        $this->normalizer = $normalizer;
         parent::__construct($registry, Author::class);
     }
 
-    /**
-     * @param Author $author
-     * @return array
-     */
-    public function transform(Author $author)
-    {
-        return [
-          'id' => $author->getId(),
-          'name' => $author->getName(),
-        ];
-    }
-
-    /**
-     * @param $items
-     * @return array
-     */
-    public function transformAll($items)
-    {
-        $result = [];
-        foreach ($items as $item){
-            $result[] = $this->transform($item);
-        }
-        return $result;
-    }
 
     /**
      * @param int $page
      * @param int $max
-     * @return array
+     * @return array|\ArrayObject|bool|float|int|string|null
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
     public function paginationAuthor(int $page, int $max)
     {
@@ -55,14 +38,9 @@ class AuthorRepository extends ServiceEntityRepository
             ->orderBy('a.id', 'ASC')
             ->setFirstResult($page)
             ->setMaxResults($max);
+        $results = $qb ->getQuery()->getResult(AbstractQuery::HYDRATE_OBJECT);
 
-        $authors = $qb ->getQuery()->getResult();
-        $result = [];
-        foreach($authors as $author){
-            $result[] = $this->transform($author);
-        }
-
-        return $result;
+        return $this->normalizer->normalize($results,null,['groups' => 'list_author']);
     }
     // /**
     //  * @return Author[] Returns an array of Author objects

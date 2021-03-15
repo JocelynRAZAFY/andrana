@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class AuthorManager extends BaseManager
@@ -20,6 +21,8 @@ class AuthorManager extends BaseManager
      */
     private $authorRepository;
 
+    private $normalizer;
+
     public function __construct(
         EntityManagerInterface $em,
         ContainerInterface $container,
@@ -27,9 +30,11 @@ class AuthorManager extends BaseManager
         SessionInterface $session,
         LoggerInterface $logger,
         SerializerInterface $serializer,
-        AuthorRepository $authorRepository)
+        AuthorRepository $authorRepository,
+        NormalizerInterface $normalizer)
     {
         $this->authorRepository = $authorRepository;
+        $this->normalizer = $normalizer;
         parent::__construct($em, $container, $requestStack, $session, $logger, $serializer);
     }
 
@@ -69,7 +74,7 @@ class AuthorManager extends BaseManager
 
         $result = [
             'action' => $action,
-            'author' => $this->authorRepository->transform($author)
+            'author' => $this->normalizer->normalize($author,null,['groups' => ['list_author']])
         ];
         return $this->success($result);
     }
