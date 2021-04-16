@@ -18,16 +18,16 @@ class Author
      * @ORM\Column(type="integer")
      * @Groups({"show_author","list_author","list_article"})
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=50)
      * @Groups({"show_author","list_author","list_article"})
      */
-    private $name;
+    private string $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Article", mappedBy="author")
+     * @ORM\OneToMany(targetEntity="Article", mappedBy="author", cascade={"persist"})
      * @Groups({"show_author"})
      */
     private $article;
@@ -83,5 +83,15 @@ class Author
         }
 
         return $this;
+    }
+
+    public function setArticle(array $articles)
+    {
+        foreach ($articles as $item){
+            $article = new Article();
+            $article->setTitle($item->title);
+            $article->setDescription($item->description);
+            self::addArticle($article);
+        }
     }
 }

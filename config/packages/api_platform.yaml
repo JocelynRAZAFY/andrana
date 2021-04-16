@@ -3,7 +3,7 @@ api_platform:
         paths: ['%kernel.project_dir%/config/api_platform']
     patch_formats:
         json: ['application/merge-patch+json']
-    title:  API Vuejsymf5
+    title:  API ANDRANA
     version: 1.0.0
     swagger:
         api_keys:

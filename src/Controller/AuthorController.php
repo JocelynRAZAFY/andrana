@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AuthorController extends AbstractController
 {
 
-    private $authorManager;
+    private AuthorManager $authorManager;
 
     public function __construct(AuthorManager $authorManager)
     {
@@ -38,6 +38,14 @@ class AuthorController extends AbstractController
     public function removeAuthor()
     {
         return $this->authorManager->removeAuthor();
+    }
+
+    /**
+     * @Route("/api/back/author/create", name="create_author", methods={"POST"})
+     */
+    public function createAuthor()
+    {
+        return $this->authorManager->createAuthor();
     }
 
 }

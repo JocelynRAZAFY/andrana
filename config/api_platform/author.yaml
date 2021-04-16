@@ -1,0 +1,31 @@
+resources:
+  App\Entity\Author:
+    collectionOperations:
+      api_create_author:
+        method: post
+        route_name: 'create_author'
+        controller: 'App\Controller\AuthorController'
+        openapi_context:
+          summary:  Author create
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: email of user
+                    articles:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          title:
+                            type: string
+                          description:
+                            type: string
+
+    itemOperations:
+      get: ~
+

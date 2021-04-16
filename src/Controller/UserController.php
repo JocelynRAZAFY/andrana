@@ -12,15 +12,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
 
-    /**
-     * @var UserManager
-     */
-    private $userManager;
+    private UserManager $userManager;
 
-    /**
-     * UserController constructor.
-     * @param UserManager $userManager
-     */
     public function __construct(UserManager $userManager)
     {
         $this->userManager = $userManager;

@@ -1,11 +1,10 @@
 {
     "devDependencies": {
-        "@symfony/webpack-encore": "^0.30.2",
+        "@symfony/stimulus-bridge": "^2.0.0",
+        "@symfony/webpack-encore": "^1.0.0",
         "core-js": "^3.0.0",
-        "node-sass": "^4.14.1",
         "regenerator-runtime": "^0.13.2",
-        "sass-loader": "^7.0.1",
-        "vue-template-compiler": "^2.6.11",
+        "stimulus": "^2.0.0",
         "webpack-notifier": "^1.6.0"
     },
     "license": "UNLICENSED",
@@ -15,19 +14,5 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
-    },
-    "dependencies": {
-        "axios": "^0.19.1",
-        "element-ui": "^2.13.0",
-        "js-cookie": "^2.2.1",
-        "mdbvue": "^6.7.1",
-        "vee-validate": "^2.2.8",
-        "vue": "^2.6.11",
-        "vue-lazyload": "^1.2.6",
-        "vue-loader": "^15.8.3",
-        "vue-router": "^3.1.5",
-        "vueditor": "^0.3.1",
-        "vuelidate": "^0.7.5",
-        "vuex": "^3.1.2"
     }
 }

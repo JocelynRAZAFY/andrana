@@ -1,92 +1,32 @@
 resources:
   App\Entity\User:
     collectionOperations:
-      user_info:
-        method: get
-        route_name: 'user_info'
-        controller: 'App\Controller\UserController'
-        swagger_context:
-          summary: récupérer les informations de l'utilisateur connecté
-          responses:
-            200:
-              description: Informations de l'utilisateur connecté
-              schema:
-                type: object
-                properties:
-                  account_type:
-                    type: string
-                    description: type de compte
-
-    itemOperations:
       api_user_login:
         method: post
         route_name: 'api_user_login'
         controller: 'App\Controller\UserController'
-        swagger_context:
+        openapi_context:
           summary:  Login user
-          parameters:
-            - name: body
-              in: body
-              schema:
-                type: object
-                properties:
-                  email:
-                    type: string
-                    description: email of user
-                  password:
-                    type: string
-                    description: password of user
+          requestBody:
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      description: email of user
+                    password:
+                      type: string
+                      description: password of user
 
-          responses:
-            200:
-              description: Utilisateur connecté
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    description: token of user connected
-
-      user_update:
-        method: post
-        route_name: 'user_update'
+      user_info:
+        method: get
+        route_name: 'user_info'
         controller: 'App\Controller\UserController'
-        swagger_context:
-          summary:  Update User
-          parameters:
-            - name: body
-              in: body
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    description: id
-                  email:
-                    type: string
-                    description: email
-                  role:
-                    type: string
-                    description: role
-                  profile:
-                    type: integer
-                    description: profile
-                  lastName:
-                    type: string
-                    description: lastName
-                  firstName:
-                    type: string
-                    description: firstName
-                  tel:
-                    type: string
-                    description: tel
+        openapi_context:
+          summary: récupérer les informations de l'utilisateur connecté
 
-          responses:
-            200:
-              description: Utilisateur connecté
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    description: result
+
+    itemOperations:
+      get: ~

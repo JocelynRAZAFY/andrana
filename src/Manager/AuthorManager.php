@@ -4,44 +4,39 @@
 namespace App\Manager;
 
 
+use App\Entity\Article;
 use App\Entity\Author;
 use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class AuthorManager extends BaseManager
 {
-    /**
-     * @var AuthorRepository
-     */
-    private $authorRepository;
 
-    private $normalizer;
+    private AuthorRepository $authorRepository;
 
+    private SerializerInterface $serializer;
     public function __construct(
         EntityManagerInterface $em,
         ContainerInterface $container,
-        RequestStack $requestStack,
-        SessionInterface $session,
-        LoggerInterface $logger,
-        SerializerInterface $serializer,
+        RequestStack $request,
+        Security $security,
+        NormalizerInterface $normalizer,
         AuthorRepository $authorRepository,
-        NormalizerInterface $normalizer)
+        SerializerInterface $serializer)
     {
         $this->authorRepository = $authorRepository;
-        $this->normalizer = $normalizer;
-        parent::__construct($em, $container, $requestStack, $session, $logger, $serializer);
+        $this->serializer = $serializer;
+        parent::__construct($em, $container, $request, $security, $normalizer);
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    public function allAuthor()
+
+    public function allAuthor(): JsonResponse
     {
         $maxPagination = (int)$this->getParameter('max_pagination');
         if($this->data->page == 1){
@@ -58,10 +53,7 @@ class AuthorManager extends BaseManager
         return $this->success($result);
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    public function updateAuthor()
+    public function updateAuthor(): JsonResponse
     {
         $author = $this->authorRepository->find($this->data->id);
         $action = 'edit';
@@ -74,15 +66,12 @@ class AuthorManager extends BaseManager
 
         $result = [
             'action' => $action,
-            'author' => $this->normalizer->normalize($author,null,['groups' => ['list_author']])
+            'author' => $this->normalize($author,['groups' => ['list_author']])
         ];
         return $this->success($result);
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    public function removeAuthor()
+    public function removeAuthor(): JsonResponse
     {
         $author = $this->authorRepository->find($this->data->id);
         $this->remove($author);
@@ -91,5 +80,18 @@ class AuthorManager extends BaseManager
             'id' => $this->data->id
         ];
         return $this->success($result);
+    }
+
+    public function createAuthor()
+    {
+//        dd($this->dataJson);
+//        $author = $this->serializer->deserialize($this->dataJson,Author::class,'json');
+
+        $author = new Author();
+        $author->setName($this->data->name);
+        $author->setArticle($this->data->articles);
+        $this->save($author);
+
+        return $this->success(['author' => $this->normalize($author,['groups' => ['list_author']])]);
     }
 }

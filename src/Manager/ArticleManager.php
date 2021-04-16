@@ -5,66 +5,49 @@ namespace App\Manager;
 
 
 use App\Entity\Article;
+use App\EventSubscriber\Events;
+use App\Messages\TestMessage;
 use App\Object\AllArticle;
 use App\Repository\ArticleRepository;
 use App\Repository\AuthorRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Faker\Factory;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class ArticleManager extends BaseManager
 {
-    /**
-     * @var ArticleRepository
-     */
-    private $articleRepository;
 
-    /**
-     * @var AuthorRepository
-     */
-    private $authorRepository;
+    private ArticleRepository $articleRepository;
 
-    private $normalizer;
+    private AuthorRepository $authorRepository;
 
-    /**
-     * ArticleManager constructor.
-     * @param EntityManagerInterface $em
-     * @param ContainerInterface $container
-     * @param RequestStack $requestStack
-     * @param SessionInterface $session
-     * @param LoggerInterface $logger
-     * @param SerializerInterface $serializer
-     * @param ArticleRepository $articleRepository
-     * @param AuthorRepository $authorRepository
-     */
+    private MessageBusInterface $bus;
+
     public function __construct(
         EntityManagerInterface $em,
         ContainerInterface $container,
         RequestStack $requestStack,
-        SessionInterface $session,
-        LoggerInterface $logger,
-        SerializerInterface $serializer,
-        ArticleRepository $articleRepository,
-        AuthorRepository $authorRepository,
-        NormalizerInterface $normalizer)
+        Security $security,
+        NormalizerInterface $normalizer,
+        MessageBusInterface $bus)
     {
-        $this->articleRepository = $articleRepository;
-        $this->authorRepository = $authorRepository;
-        $this->normalizer = $normalizer;
-        parent::__construct($em, $container, $requestStack, $session, $logger, $serializer);
+        $this->bus = $bus;
+        parent::__construct($em, $container, $requestStack, $security, $normalizer);
     }
 
-    /**
-     * @return JsonResponse
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
-     */
-    public function allArticle()
+
+    public function allArticle(): JsonResponse
     {
         $maxPagination = (int)$this->getParameter('max_pagination');
         if($this->data->page == 1){
@@ -74,7 +57,7 @@ class ArticleManager extends BaseManager
         }
 
         $articles = $this->articleRepository->paginationArticle($page,$maxPagination);
-        $authors = $this->normalizer->normalize($this->authorRepository->findAll(),null,['groups' => ['list_author']]);
+        $authors = $this->normalize($this->authorRepository->findAll(),null,['groups' => ['list_author']]);
 
         $result = [
             'total' => count($this->articleRepository->findAll()),
@@ -85,10 +68,7 @@ class ArticleManager extends BaseManager
         return $this->success($result);
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    public function updateArticle()
+    public function updateArticle(): JsonResponse
     {
         $article = $this->articleRepository->find($this->data->id);
         $author = $this->authorRepository->find($this->data->author->id);
@@ -96,23 +76,20 @@ class ArticleManager extends BaseManager
         if(!$article){
             $article = new Article();
             $action = 'add';
+            $article->setAuthor($author);
         }
         $article->setTitle($this->data->title);
-        $article->setAuthor($author);
         $article->setDescription($this->data->description);
         $this->save($article);
 
         $result = [
             'action' => $action,
-            'article' => $this->normalizer->normalize($article,null,['groups' => ['list_article']])
+            'article' => $this->normalize($article,['groups' => ['list_article']])
         ];
         return $this->success($result);
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    public function removeArticle()
+    public function removeArticle(): JsonResponse
     {
         $article = $this->articleRepository->find($this->data->id);
         $this->remove($article);
@@ -120,6 +97,20 @@ class ArticleManager extends BaseManager
         $result = [
             'id' => $this->data->id
         ];
+        return $this->success($result);
+    }
+
+    public function testArticle(): JsonResponse
+    {
+        $faker = Factory::create();
+        $words = $faker->words($nb = 10, $asText = false);
+        $result = [];
+        foreach ($words as $word){
+            $testMessage = new TestMessage($word);
+            $this->bus->dispatch($testMessage);
+            $result[] = $word;
+        }
+
         return $this->success($result);
     }
 }

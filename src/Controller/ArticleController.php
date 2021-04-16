@@ -46,4 +46,12 @@ class ArticleController extends AbstractController
         return $this->articleManager->removeArticle();
     }
 
+    /**
+     * @Route("/api/article/test", name="test_article", methods={"GET"})
+     */
+    public function testArticle()
+    {
+        return $this->articleManager->testArticle();
+    }
+
 }

@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
@@ -30,31 +30,37 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *  @Groups({"list_user"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     *  @Groups({"list_user"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=180)
+     *  @Groups({"list_user"})
      */
     private $emailInitial;
 
     /**
      * @ORM\Column(type="string", length=50)
+     *  @Groups({"list_user"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="boolean")
+     *  @Groups({"list_user"})
      */
     private $statusValidationEmail;
 
     /**
      * @ORM\Column(type="json")
+     *  @Groups({"list_user"})
      */
     private $roles = [];
 
@@ -66,51 +72,61 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=50,nullable=true)
+     *  @Groups({"list_user"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     *  @Groups({"list_user"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     *  @Groups({"list_user"})
      */
     private $emailSocial;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     *  @Groups({"list_user"})
      */
     private $nameSocial;
 
     /**
      * @ORM\Column(type="boolean", nullable=true, options={"default": false})
+     *  @Groups({"list_user"})
      */
     private $isSocial;
 
     /**
      * @ORM\Column(type="boolean", nullable=true, options={"default": false})
+     *  @Groups({"list_user"})
      */
     private $enabled;
 
     /**
      * @ORM\Column(type="text",nullable=true)
+     *  @Groups({"list_user"})
      */
     private $tel;
 
     /**
      * @ORM\Column(type="text",nullable=true)
+     * @Groups({"list_user"})
      */
     private $address;
 
     /**
      * @ORM\Column(type="text",nullable=true)
+     * @Groups({"list_user"})
      */
     private $addressDelivery;
 
     /**
      * @ORM\Column(type="string", length=550,nullable=true)
+     * @Groups({"list_user"})
      */
     private $companyName;
 
@@ -126,11 +142,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=550,nullable=true)
+     * @Groups({"list_user"})
      */
     private $avatar;
 
     /**
      * @ORM\Column(type="string", length=550,nullable=true)
+     * @Groups({"list_user"})
      */
     private $logo;
 
@@ -141,6 +159,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string",nullable=true)
+     * @Groups({"list_user"})
      */
     private $status;
 

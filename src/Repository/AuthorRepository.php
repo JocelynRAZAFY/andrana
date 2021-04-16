@@ -17,7 +17,8 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class AuthorRepository extends ServiceEntityRepository
 {
-    private $normalizer;
+    private NormalizerInterface $normalizer;
+
     public function __construct(ManagerRegistry $registry,
                                 NormalizerInterface $normalizer)
     {

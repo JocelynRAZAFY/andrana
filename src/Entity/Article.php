@@ -16,25 +16,25 @@ class Article
      * @ORM\Column(type="integer")
      * @Groups({"show_article","list_article","list_author","show_author"})
      */
-    private $id;
+    private int $id;
 
     /**
      * @ORM\Column(type="string", length=50)
      * @Groups({"show_article","list_article","list_author","show_author"})
      */
-    private $title;
+    private string $title;
 
     /**
      * @ORM\Column(type="text")
      * @Groups({"show_article","list_author","show_author"})
      */
-    private $description;
+    private string $description;
 
     /**
      * @ORM\ManyToOne(targetEntity="Author", inversedBy="article")
      * @Groups({"show_article","list_article"})
      */
-    private $author;
+    private Author $author;
 
     public function getId(): ?int
     {

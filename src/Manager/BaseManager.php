@@ -8,94 +8,55 @@
 
 namespace App\Manager;
 
-use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+
 
 abstract class BaseManager
 {
+    private EntityManagerInterface $em;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private ContainerInterface $container;
 
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private $request;
 
-    /**
-     * @var RequestStack
-     */
-    public $request;
-
-    /**
-     * @var mixed
-     */
     public $data;
 
-    /**
-     * @var mixed
-     */
+    public $dataJson;
+
     public $dataArray;
 
-    /**
-     * @var array
-     */
-    public $formData;
+    public array $formData;
 
-    /**
-     * @var SessionInterface
-     */
-    public $session;
+    public array $files;
 
-    /**
-     * @var array
-     */
-    public $files;
+    private Security $security;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    private NormalizerInterface $normalizer;
 
-    /**
-     * @var SerializerInterface
-     */
-    public $serializer;
 
-    /**
-     * BaseManager constructor.
-     * @param EntityManagerInterface $em
-     * @param ContainerInterface $container
-     * @param RequestStack $requestStack
-     * @param SerializerInterface $serializer
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         EntityManagerInterface $em,
         ContainerInterface $container,
-        RequestStack $requestStack,
-        SessionInterface $session,
-        LoggerInterface $logger,
-        SerializerInterface $serializer)
+        RequestStack $request,
+        Security $security,
+        NormalizerInterface $normalizer)
     {
         $this->em = $em;
         $this->container = $container;
-        $this->request = $requestStack->getCurrentRequest();
+        $this->request = $request->getCurrentRequest();
+        $this->dataJson = $this->request->getContent();
         $this->data = $this->request != null ? json_decode($this->request->getContent()) : null;
         $this->dataArray = $this->request != null ? json_decode($this->request->getContent(),true) : null;
         $this->formData = $this->request->request->all();
-        $this->session = $session;
         $this->files = $this->request->files->all();
-        $this->logger = $logger;
-        $this->serializer = $serializer;
+        $this->security = $security;
+        $this->normalizer = $normalizer;
+
     }
 
     protected function json($data, int $status = 200, array $headers = [], array $context = []): JsonResponse
@@ -133,44 +94,9 @@ abstract class BaseManager
         $this->em->flush();
     }
 
-    /**
-     * Creates and returns a Form instance from the type of the form.
-     *
-     * @final
-     */
-    protected function createForm(string $type, $data = null, array $options = array()): FormInterface
-    {
-        return $this->container->get('form.factory')->create($type, $data, $options);
-    }
-
-
-    /**
-     * Get a user from the Security Token Storage.
-     *
-     * @return mixed
-     *
-     * @throws \LogicException If SecurityBundle is not available
-     *
-     * @see TokenInterface::getUser()
-     *
-     * @final
-     */
     protected function getUser()
     {
-        if (!$this->container->has('security.token_storage')) {
-            throw new \LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
-        }
-
-        if (null === $token = $this->container->get('security.token_storage')->getToken()) {
-            return;
-        }
-
-        if (!is_object($user = $token->getUser())) {
-            // e.g. anonymous authentication
-            return;
-        }
-
-        return $user;
+        return $this->security->getUser();
     }
 
     /**
@@ -239,45 +165,6 @@ abstract class BaseManager
     }
 
     /**
-     * Manage cookie
-     *
-     * @param $key
-     * @param $value
-     * @param $timeOut
-     * @return bool
-     */
-    public function setCookie($key, $value, $timeOut)
-    {
-        setcookie($key, $value, $timeOut, "/");
-
-        return true ;
-    }
-
-    /**
-     * Verify if cookie have this key
-     *
-     * @param type $_key
-     * @return type
-     */
-    public function hasCookieKey($key)
-    {
-        return $this->request->cookies->has($key) ;
-    }
-
-    /**
-     * Get cookie value by key
-     *
-     * @param type $_key
-     * @return string
-     */
-    public function getCookie($key)
-    {
-        $value = $this->request->cookies->get($key)  ;
-
-        return $value ;
-    }
-
-    /**
      *  Get parameter in service.yaml
      *
      * @param $name
@@ -286,5 +173,10 @@ abstract class BaseManager
     public function getParameter($name)
     {
         return $this->container->getParameter($name);
+    }
+
+    public function normalize($object,$context)
+    {
+        return $this->normalizer->normalize($object, null,$context);
     }
 }
