@@ -1,10 +1,10 @@
 {
     "devDependencies": {
-        "@symfony/webpack-encore": "^0.29.0",
+        "@symfony/webpack-encore": "^4.2.0",
         "core-js": "^3.0.0",
         "node-sass": "^4.14.0",
         "regenerator-runtime": "^0.13.2",
-        "sass-loader": "^7.0.1",
+        "sass-loader": "^13.2.0",
         "vue-template-compiler": "^2.6.11",
         "webpack-notifier": "^1.6.0"
     },
@@ -25,7 +25,7 @@
         "vee-validate": "^2.2.8",
         "vue": "^2.6.11",
         "vue-lazyload": "^1.2.6",
-        "vue-loader": "^15.8.3",
+        "vue-loader": "^17.0.1",
         "vue-router": "^3.1.5",
         "vuelidate": "^0.7.5",
         "vuex": "^3.1.2"
